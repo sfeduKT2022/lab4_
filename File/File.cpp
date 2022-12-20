@@ -1,6 +1,14 @@
-﻿#include <iostream>
+﻿/******************************************************************************
+Павлов Владислав Евгеньевич
+КТбо1-2
+Лабораторная работа №5 «Файлы данных»
+Вариант № 9
+Задание: Написать программу, которая в тексте из файла выберет слова с нечетным количеством букв и выведет результат в файл. 
+*******************************************************************************/
+#include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 
 bool separator(char ch)
 {
@@ -21,7 +29,8 @@ int main()
 
     std::fstream fs;
 
-    int wordCounter = 0;
+    std::vector<std::string> words;
+    std::vector<std::string> oddWords;
 
     fs.open(textFilePath, std::fstream::in);
 
@@ -31,27 +40,31 @@ int main()
         std::string line;
         while (!fs.eof())
         {
-            
             std::getline(fs, line);
             if (!line.empty())
             {
+                std::string word = "";
                 for (int i = 0; i < line.length(); ++i)
                 {
-                    if (separator(line[i]))
+                    if (!separator(line[i]))
                     {
-                        ++wordCounter;
-                        while (separator(line[i]))
+                        word = word + line[i];
+                    }
+                    else
+                    {
+                        if (!word.empty())
                         {
-                            ++i;
+                            words.push_back(word);
+                            word = "";
                         }
                     }
                 }
-                if (!separator(line[line.length()-1]))
-                    ++wordCounter;
-                if (separator(line[0]))
-                    --wordCounter;
             }
-            
+            for (auto& word : words)
+            {
+                if (word.size() % 2 != 0)
+                    oddWords.push_back(word);
+            }
         }
         fs.close();
     }
@@ -65,9 +78,11 @@ int main()
 
     if (fs.is_open())
     {
-        std::string msg = "word count is: " + std::to_string(wordCounter);
-        printf("%s\n", msg.c_str());
-        fs << msg << std::endl;
+        for (auto& word : oddWords)
+        {
+            //std::cout << word << std::endl;
+            fs << word << std::endl;
+        }
         fs.close();
     }
     else
